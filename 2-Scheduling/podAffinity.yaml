@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: group1
+  labels:
+    group: "1"
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: group1a
+spec:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: group
+                operator: In
+                values:
+                  - "1"
+          topologyKey: kubernetes.io/hostname
+  containers:
+    - name: pod-affinity
+      image: nginx
