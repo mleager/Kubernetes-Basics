@@ -36,9 +36,9 @@ Perform the following actions on your minikube:
 ### Declarative
 
 * Must ENCODE the values before using them in a manifest/definition file
-`echo -n 'mysql' | base64`   -->  `bXlzcWw=`
-`echo -n 'root' | base64`    -->  `cm9vdA==`
-`echo -n 'passwrd' | base64` -->  `cGFzc3dyZA==`
+`echo 'mysql' | base64`   -->  `bXlzcWw=`
+`echo 'root' | base64`    -->  `cm9vdA==`
+`echo 'passwrd' | base64` -->  `cGFzc3dyZA==`
 
 ```
 apiVersion: v1
@@ -53,9 +53,9 @@ data:
 `k create -f secret.yaml`
 
 * To DECODE Secret Values
-`echo -n 'bXlzcWw=' | base64 --decode`     -->  `mysql`
-`echo -n 'cm9vdA==' | base64 --decode`     -->  `root`
-`echo -n 'cGFzc3dyZA==' | base64 --decode` -->  `passwrd`
+`echo 'bXlzcWw=' | base64 --decode`     -->  `mysql`
+`echo 'cm9vdA==' | base64 --decode`     -->  `root`
+`echo 'cGFzc3dyZA==' | base64 --decode` -->  `passwrd`
 
 
 ## Access a Secret from a Pod
