@@ -1,13 +1,13 @@
 # Secrets & ConfigMaps
 
 Perform the following actions on your minikube:
-- Create a secret
-- Access a secret from a Pod
-- Create a configmap
-- Access a configmap from a Pod
+1. Create a secret
+2. Access a secret from a Pod
+3. Create a configmap
+4. Access a configmap from a Pod
 
 
-### Note on Secrets
+### Note on Secrets:
 - Secrets and NOT Encrypted, they're only encoded ( anyone can decode )
 - Do NOT check-in Secret Objects to your Repos
 - Secrets are not Encrypted be default in ETCD ( must enable Encryption-at-Rest )
@@ -16,27 +16,27 @@ Perform the following actions on your minikube:
 - Consider External 3rd Party Secret Store ( AWS, Azure, GCP, Vault )
 
 
-## Create a Secret
+## -- Create a Secret --
 
 ### Imperative
 
-Inline Arguments
-* `k create secret generic <secret name> --from-literal=<key>=<value>`
+- Inline Arguments <br>
+<b>`kubectl create secret generic <secret name> --from-literal=<key>=<value>`</b>
 
-`k create secret generic app-secret --from-literal=DB_HOST=mysql`
+  `kubectl create secret generic app-secret --from-literal=DB_HOST=mysql`
 
-Input from a File
-* `k create secret generic <secret name> --from-file=<path/to/file>`
+- Input from a File<br>
+<b>`kubectl create secret generic <secret name> --from-file=<path/to/file>`</b>
 
-`k create secret generic app-secret --from-file=./app-secret.txt`
+  `kubectl create secret generic app-secret --from-file=./app-secret.properties`
 
 
 ### Declarative
 
-* Must ENCODE the values before using them in a manifest/definition file <br>
-`echo -n 'mysql' | base64`   -->  `bXlzcWw=` <br>
-`echo -n 'root' | base64`    -->  `cm9vdA==` <br>
-`echo -n 'passwrd' | base64` -->  `cGFzc3dyZA==` <br>
+* Must ENCODE the values before using them in a Definition File <br>
+`echo 'mysql' | base64`   -->  `bXlzcWw=` <br>
+`echo 'root' | base64`    -->  `cm9vdA==` <br>
+`echo 'passwrd' | base64` -->  `cGFzc3dyZA==` <br>
 
 ```
 apiVersion: v1
@@ -48,17 +48,17 @@ data:
   DB_USER: cm9vdA==
   DB_PASSWORD: cGFzc3dyZA==
 ```
-`k create -f secret.yaml`
+`$ kubectl create -f secret.yaml`
 
 * To DECODE Secret Values <br>
-`echo -n 'bXlzcWw=' | base64 --decode`     -->  `mysql` <br>
-`echo -n 'cm9vdA==' | base64 --decode`     -->  `root` <br>
-`echo -n 'cGFzc3dyZA==' | base64 --decode` -->  `passwrd`
+`echo 'bXlzcWw=' | base64 --decode`     -->  `mysql` <br>
+`echo 'cm9vdA==' | base64 --decode`     -->  `root` <br>
+`echo 'cGFzc3dyZA==' | base64 --decode` -->  `passwrd`
 
 
-## Access a Secret from a Pod
+## -- Access a Secret from a Pod --
 
-### Inject Secrets Object into a Pod
+### Inject Secret Object into a Pod
 ```
 apiVersion: v1
 kind: Pod
@@ -110,26 +110,25 @@ spec:
 * Each attribute in the Secret is created as a file, 
   and the Value of the Secret it its content
 
- $ ls /opt/app-secret-volume <br>
+ `$ ls /opt/app-secret-volume` <br>
     <b>DB_HOST    DB_PASSWORD    DB_USER</b>
 
- $ cat /opt/app-secret-volume/DB_PASSWORD <br>
+ `$ cat /opt/app-secret-volume/DB_PASSWORD` <br>
     <b>passwrd</b>
 
-
-## Create a ConfigMap
+## -- Create a ConfigMap --
 
 ### Imperative
 
-Inline Arguments
-* `k create configmap <cm-name> --from-literal=<key>=<value>`
+- Inline Arguments <br>
+<b>`kubectl create configmap <cm-name> --from-literal=<key>=<value>` </b>
 
-`k create cm app-config --from-literal=APP_GROUP=1 --from-literal=APP_ENV=prod`
+  `kubectl create cm app-config --from-literal=APP_GROUP=1 --from-literal=APP_ENV=prod`
 
-Input from a File
-* `k create configmap <cm-name> --from_file=<path/to/file>`
+- Input from a File <br>
+<b>`kubectl create configmap <cm-name> --from_file=<path/to/file>` </b>
 
-`k create cm app-config --from_file=/tmp/app-configmap.txt`
+  `kubectl create cm app-config --from_file=/tmp/app-configmap.properties`
 
 
 ### Declarative
@@ -144,10 +143,10 @@ data:
   PORT: 3306
   max_allowed_packet: 128M
 ```
-`k create -f configmap.yaml`
+`$ kubectl create -f configmap.yaml`
 
 
-## ---- Access a ConfigMap from a Pod ---- ##
+## -- Access a ConfigMap from a Pod --
 
 ### Inject ConfigMap in a Pod
 ```
