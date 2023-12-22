@@ -1,0 +1,39 @@
+# Inject All ConfigMap Values into a Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp-1
+  name: webapp-1
+  namespace: default
+spec:
+  containers:
+    - image: nginx
+      name: webapp
+      ports:
+        - containerPort: 8080
+      envFrom:
+        - configMapRef:
+            name: app-config
+
+---
+# Inject only a Single ConfigMap Value into a Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: webapp-2
+  name: webapp-2
+  namespace: default
+spec:
+  containers:
+    - name: webapp-pod
+      image: nginx
+      ports:
+        - containerPort: 8080
+      env:
+        - name: APP_GROUP
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_GROUP
