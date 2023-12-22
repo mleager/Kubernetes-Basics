@@ -1,7 +1,5 @@
 # Secrets & ConfigMaps
 
-=
-
 Perform the following actions on your minikube:
 - Create a secret
 - Access a secret from a Pod
@@ -12,7 +10,7 @@ Perform the following actions on your minikube:
 ### Note on Secrets
 - Secrets and NOT Encrypted, they're only encoded ( anyone can decode )
 - Do NOT check-in Secret Objects to your Repos
-- Secrets are not Encrypted in ETCD ( enable Encryption-at-Rest )
+- Secrets are not Encrypted be default in ETCD ( must enable Encryption-at-Rest )
 - Anyone able to create Pods/Deploy in a Namespace can access Secret Objects in that Namespace
 - Configure RBAC for access to Secrets
 - Consider External 3rd Party Secret Store ( AWS, Azure, GCP, Vault )
@@ -22,23 +20,23 @@ Perform the following actions on your minikube:
 
 ### Imperative
 
-- Inline Arguments
-* k create secret generic <secret name> --from-literal=<key>=<value>
+Inline Arguments
+* `k create secret generic <secret name> --from-literal=<key>=<value>`
 
 `k create secret generic app-secret --from-literal=DB_HOST=mysql`
 
-- Input from a File
-* k create secret generic <secret name> --from-file=<path/to/file>
+Input from a File
+* `k create secret generic <secret name> --from-file=<path/to/file>`
 
 `k create secret generic app-secret --from-file=./app-secret.txt`
 
 
 ### Declarative
 
-* Must ENCODE the values before using them in a manifest/definition file
-`echo -n 'mysql' | base64`   -->  `bXlzcWw=`
-`echo -n 'root' | base64`    -->  `cm9vdA==`
-`echo -n 'passwrd' | base64` -->  `cGFzc3dyZA==`
+* Must ENCODE the values before using them in a manifest/definition file <br>
+`echo -n 'mysql' | base64`   -->  `bXlzcWw=` <br>
+`echo -n 'root' | base64`    -->  `cm9vdA==` <br>
+`echo -n 'passwrd' | base64` -->  `cGFzc3dyZA==` <br>
 
 ```
 apiVersion: v1
@@ -52,9 +50,9 @@ data:
 ```
 `k create -f secret.yaml`
 
-* To DECODE Secret Values
-`echo -n 'bXlzcWw=' | base64 --decode`     -->  `mysql`
-`echo -n 'cm9vdA==' | base64 --decode`     -->  `root`
+* To DECODE Secret Values <br>
+`echo -n 'bXlzcWw=' | base64 --decode`     -->  `mysql` <br>
+`echo -n 'cm9vdA==' | base64 --decode`     -->  `root` <br>
 `echo -n 'cGFzc3dyZA==' | base64 --decode` -->  `passwrd`
 
 
@@ -112,24 +110,24 @@ spec:
 * Each attribute in the Secret is created as a file, 
   and the Value of the Secret it its content
 
->> ls /opt/app-secret-volume
-    DB_HOST    DB_PASSWORD    DB_USER
+ $ ls /opt/app-secret-volume <br>
+    <b>DB_HOST    DB_PASSWORD    DB_USER</b>
 
->> cat /opt/app-secret-volume/DB_PASSWORD
-    passwrd
+ $ cat /opt/app-secret-volume/DB_PASSWORD <br>
+    <b>passwrd</b>
 
 
 ## Create a ConfigMap
 
 ### Imperative
 
-- Inline Arguments
-* k create configmap <cm-name> --from-literal=<key>=<value>
+Inline Arguments
+* `k create configmap <cm-name> --from-literal=<key>=<value>`
 
 `k create cm app-config --from-literal=APP_GROUP=1 --from-literal=APP_ENV=prod`
 
-- Input from a File
-* k create configmap <cm-name> --from_file=<path/to/file>
+Input from a File
+* `k create configmap <cm-name> --from_file=<path/to/file>`
 
 `k create cm app-config --from_file=/tmp/app-configmap.txt`
 
