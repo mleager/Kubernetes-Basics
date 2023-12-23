@@ -1,6 +1,6 @@
 # ETCD Encryption at Rest
 
-Kubernetes Docs - Encrypting Confidential Data at Rest:
+Kubernetes Docs - Encrypting Confidential Data at Rest: <br>
 https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
 
 1. Determine whether Encryption at Rest is already enabled
@@ -11,8 +11,8 @@ https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
 
 ## Determine whether Encryption at Rest is already enabled
 
-1. Create a basic Secret
-`kubectl create secret generic secret-1 --from-literal=mykey-1=bigsecret`
+1. Create a basic Secret <br>
+`$ kubectl create secret generic secret-1 --from-literal=mykey-1=bigsecret`
 
 This Secret Object can be decoded by anyone that has Read access.
 
@@ -33,10 +33,10 @@ The output on the right-most column will include the Secret's key, and either in
 
 3. Check if the Kube-APIserver is using the argument "--encryption-provider-config"
 
-Manually check the Kube-APIserver Definition file or search for the APIserver's processes.
-a. `kubectl -n kube-system describe pod kube-apiserver-controlplane`
-b. (Kubeadm) `$ cat /etc/kubernetes/manifests/kube-apiserver.yaml`
-c. `ps aux | grep kube-apiserver-controlplane | grep "encryption-provider-config"`
+Manually check the Kube-APIserver Definition file or search for the APIserver's processes. <br>
+a. `$ kubectl -n kube-system describe pod kube-apiserver-controlplane` <br>
+b. (Kubeadm) `$ cat /etc/kubernetes/manifests/kube-apiserver.yaml` <br>
+c. `$ ps aux | grep kube-apiserver-controlplane | grep "encryption-provider-config"`
 
 If no results are returned by 'c.', it is not supplied as an argument to the Kube-APIserver.
 
@@ -54,23 +54,22 @@ resources:
       - aescbc:
           keys:
             - name: key1
-              secret: IYyzqPEeIIaPM/OkPgfG1aeTsHfaMUOj63nituLs7Es= 
-              # ^^ Entered after generating key from step 2 ^^
+              secret: IYyzqPEeIIaPM/OkPgfG1aeTsHfaMUOj63nituLs7Es=  #--- Entered after generating key from step 2
       - identity: {}
 ```
 * Note: The `providers` field is an ordered list. The 1st item in the array is the method of encrpytion. All the following items are methods for decryption. 
 
-2. Generate a Random Key and Base64 encode it in order to encrpyt Secrets stored by ETCD
-`$ head -c 32 /dev/urandom | base64`
+2. Generate a Random Key and Base64 encode it in order to encrpyt Secrets stored by ETCD <br>
+`$ head -c 32 /dev/urandom | base64` <br>
 Example Key: <b>IYyzqPEeIIaPM/OkPgfG1aeTsHfaMUOj63nituLs7Es=</b>
 
 * Note: There are multiple encryption options, each with different byte-size requirements for the key.
 
 ## Update Kube-APIserver Configuration
 
-1. Move the EncryptionConfiguration's Definition file to be used as a Volume by the Kube-APIserver
-`mkdir /etc/kuberentes/enc`
-`mv env.yaml /etc/kubernetes/enc/`
+1. Move the EncryptionConfiguration's Definition file to be used as a Volume by the Kube-APIserver <br>
+`$ mkdir /etc/kuberentes/enc` <br>
+`$ mv env.yaml /etc/kubernetes/enc/`
 
 2. Edit the Kube-APIserver Configuration File
 ```
@@ -111,13 +110,13 @@ spec:
 2. Wait for the Kube-APIserver to Update, or Restart manually
 * If using containerd, view Pods' status: `crictl pods`
 
-3. Confirm the Kube-APIserver is up, and includes the `--encryption-provider-config` argument
-`ps aux | grep kube-apiserver | grep "encrpytion-provider-config"`
+3. Confirm the Kube-APIserver is up, and includes the `--encryption-provider-config` argument <br>
+`$ ps aux | grep kube-apiserver | grep "encrpytion-provider-config"`
 
 ## Verify that the newly written data is Encrypted
 
-1. Create another Secret 
-`kubectl create secret generic secret-2 --from-literal=mykey-2=biggersecret`
+1. Create another Secret <br>
+`$ kubectl create secret generic secret-2 --from-literal=mykey-2=biggersecret`
 
 2. Verify if this new Secret is Encrypted in ETCD
 ```
@@ -140,11 +139,14 @@ $ etcdctl \
 |...S..>f..|
 ```
 
-3. Verify new Secret can be decrypted from ETCD
-`kubectl get secret secret-2 -o yaml`
+3. Verify new Secret can be decrypted from ETCD <br>
+`$ kubectl get secret secret-2 -o yaml` <br>
 <b>key2: YmlnZ2Vyc2VjcmV0Cg==</b>
 
 * This should return the Base64 encoded version of the Secret
+
+    `$ echo YmlnZ2Vyc2VjcmV0Cg== | base64 --decode` <br>
+    <b>biggersecret</b>
 
 ## Secrets Objects in ETCD Before Encryption at Rest
 
@@ -152,5 +154,5 @@ As of now, `secret-2` is encrypted when stored in ETCD, but `secret-1` is not.
 This is because the encryption was applied after `secret-1` was already stored inside ETCD.
 So only Secrets stored after the encryption will be encrypted.
 
-To encrypt `secret-1` we only need to update/reapply the Secret.
-`kubectl get secrets --all-namespaces -o json | kubectl replace -f -`
+To encrypt `secret-1` we only need to update/reapply the Secret. <br>
+`$ kubectl get secrets --all-namespaces -o json | kubectl replace -f -`
