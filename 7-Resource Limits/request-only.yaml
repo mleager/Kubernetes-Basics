@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: request-only-pod
+spec:
+  containers:
+    - name: smaller-container
+      image: nginx
+      ports:
+        - containerPort: 8080
+      resources:
+        requests:
+          cpu: 1
+          memory: "128Mi"
+    - name: larger-container
+      image: nginx
+      ports:
+        - containerPort: 8081
+      resources:
+        requests:
+          cpu: 2
+          memory: "2Gi"
