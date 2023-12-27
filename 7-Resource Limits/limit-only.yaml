@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: limit-only-pod
+spec:
+  containers:
+    - name: limited-container
+      image: nginx
+      ports:
+        - containerPort: 8080
+      resources:
+        limits:
+          cpu: 1
+          memory: "245Mi"
+    - name: larger-container
+      image: nginx
+      ports:
+        - containerPort: 8081
+      resources:
+        limits:
+          cpu: 2
+          memory: "4Gi"
