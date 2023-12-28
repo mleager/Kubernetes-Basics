@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ready-deploy
+  labels:
+    probe: ready-cmd
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      probe: ready-cmd
+  template:
+    metadata:
+      labels:
+        probe: ready-cmd
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            exec:
+              command:
+                - cat
+                - /usr/share/nginx/html/index.html
+            initialDelaySeconds: 5
+            periodSeconds: 5

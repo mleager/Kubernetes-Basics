@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lively-deploy-2
+  labels:
+    probe: lively-http
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      probe: lively-http
+  template:
+    metadata:
+      labels:
+        probe: lively-http
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 8080
+          livelienessProbe:
+            httpGet:
+              path: /usr/share/nginx/html/index.html
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
